@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Todo App</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container mt-5">
+        <h1 class="text-center text-primary">✅ Flask Todo App</h1>
+        
+        <!-- Add Todo Form -->
+        <div class="input-group mb-3 mt-4">
+            <input id="newTodo" type="text" class="form-control" placeholder="Enter a new todo task">
+            <button class="btn btn-success" onclick="addTodo()">Add</button>
+        </div>
+
+        <!-- Todo List -->
+        <ul id="todoList" class="list-group"></ul>
+    </div>
+
+    <script>
+        const API_URL = "/todos";
+
+        // Fetch and display todos
+        async function fetchTodos() {
+            const response = await fetch(API_URL);
+            const todos = await response.json();
+            const list = document.getElementById("todoList");
+            list.innerHTML = "";
+            todos.forEach(todo => {
+                const li = document.createElement("li");
+                li.className = "list-group-item d-flex justify-content-between align-items-center";
+                li.innerHTML = `
+                    <span style="text-decoration:${todo.done ? 'line-through' : 'none'};">
+                        ${todo.task}
+                    </span>
+                    <div>
+                        <button class="btn btn-sm btn-primary me-2" onclick="toggleDone(${todo.id}, ${!todo.done})">
+                            ${todo.done ? 'Undo' : 'Done'}
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteTodo(${todo.id})">Delete</button>
+                    </div>
+                `;
+                list.appendChild(li);
+            });
+        }
+
+        // Add new todo
+        async function addTodo() {
+            const task = document.getElementById("newTodo").value.trim();
+            if (!task) return alert("Enter a task!");
+            
+            await fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ task })
+            });
+            document.getElementById("newTodo").value = "";
+            fetchTodos();
+        }
+
+        // Toggle Done/Undo
+        async function toggleDone(id, done) {
+            await fetch(`${API_URL}/${id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ done })
+            });
+            fetchTodos();
+        }
+
+        // Delete todo
+        async function deleteTodo(id) {
+            await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+            fetchTodos();
+        }
+
+        // Initial load
+        fetchTodos();
+    </script>
+</body>
+</html>
