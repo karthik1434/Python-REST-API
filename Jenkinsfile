@@ -13,8 +13,8 @@ pipeline {
 
     options {
         // Discard old builds to save space
-        buildDiscarder(logRotator(numToKeepStr: '10'))
-        // Fail if no output for 10 min
+        buildDiscarder(logRotator(numToKeepStr: '3'))
+        // Fail if no output for 30 min
         timeout(time: 30, unit: 'MINUTES')
     }
 
@@ -25,7 +25,7 @@ pipeline {
                 script {
                     echo "Cleaning workspace before checkout..."
                 }
-                cleanWs()  // ✅ ensures no corrupted .git remains
+                cleanWs()  
             }
         }
 
@@ -39,7 +39,6 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker version'  // ✅ verify Docker works
                 sh 'docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} .'
             }
         }
