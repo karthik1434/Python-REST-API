@@ -11,16 +11,21 @@ services:
     volumes:
       - jenkins_home:/var/jenkins_home
     environment:
-      DOCKER_HOST: tcp://docker:2375    # ✅ tell Jenkins to use DinD daemon
+      DOCKER_HOST: tcp://docker:2375
     depends_on:
       - docker
     restart: unless-stopped
 
+    entrypoint: >
+      sh -c "apt-get update &&
+             apt-get install -y docker.io &&
+             exec /usr/local/bin/jenkins.sh"
+
   docker:
-    image: docker:dind   # ✅ Docker daemon in a container
+    image: docker:dind
     privileged: true
     environment:
-      DOCKER_TLS_CERTDIR: ""   # disable TLS for simplicity
+      DOCKER_TLS_CERTDIR: ""
     volumes:
       - dind_storage:/var/lib/docker
 
