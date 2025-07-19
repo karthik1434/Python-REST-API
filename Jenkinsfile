@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     triggers {
-        // Poll SCM every 5 min for new commits
+        // Poll SCM every 1 min for new commits
         pollSCM('* * * * *')
     }
 
