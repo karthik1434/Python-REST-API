@@ -3,7 +3,7 @@ pipeline {
 
     triggers {
         // Poll SCM every 5 min for new commits
-        pollSCM('H/5 * * * *')
+        pollSCM('H/1 * * * *')
     }
 
     environment {
