@@ -7,7 +7,7 @@ pipeline {
     }
 
     environment {
-        DOCKER_IMAGE = "duggana1994/my-python-api-build-by-kenkins"
+        DOCKER_IMAGE = "duggana1994/my-python-api-build-by-jenkins"
         DOCKER_TAG = "latest"
         CONTAINER_NAME = "my-python-api"
         APP_PORT = "5000"   // Flask default port
