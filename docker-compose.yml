@@ -4,11 +4,26 @@ services:
   jenkins:
     image: jenkins/jenkins:lts
     container_name: jenkins
+    user: root
     ports:
       - "8080:8080"
       - "50000:50000"
     volumes:
       - jenkins_home:/var/jenkins_home
+    environment:
+      DOCKER_HOST: tcp://docker:2375    # ✅ tell Jenkins to use DinD daemon
+    depends_on:
+      - docker
     restart: unless-stopped
+
+  docker:
+    image: docker:dind   # ✅ Docker daemon in a container
+    privileged: true
+    environment:
+      DOCKER_TLS_CERTDIR: ""   # disable TLS for simplicity
+    volumes:
+      - dind_storage:/var/lib/docker
+
 volumes:
   jenkins_home:
+  dind_storage:
