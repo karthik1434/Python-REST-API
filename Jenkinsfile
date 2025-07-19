@@ -65,25 +65,33 @@ pipeline {
             steps {
                 script {
                     echo "🚀 Deploying container locally..."
-                    
-                    // Stop & remove old container if running
-                    sh """
-                        if [ \$(docker ps -q -f name=${CONTAINER_NAME}) ]; then
-                            echo 'Stopping old container...'
-                            docker stop ${CONTAINER_NAME}
-                            docker rm ${CONTAINER_NAME}
-                        fi
-                    """
 
-                    // Run the new container
-                    sh """
-                        docker run -d \
-                          --name ${CONTAINER_NAME} \
-                          -p 5000:5000 \
-                          ${DOCKER_IMAGE}:${DOCKER_TAG}
-                    """
+            // ✅ If container exists and running → stop & remove
+            sh """
+                if [ \$(docker ps -q -f name=${CONTAINER_NAME}) ]; then
+                    echo 'Stopping running container...'
+                    docker stop ${CONTAINER_NAME}
+                    docker rm ${CONTAINER_NAME}
+                elif [ \$(docker ps -aq -f name=${CONTAINER_NAME}) ]; then
+                    echo 'Removing stopped container...'
+                    docker rm ${CONTAINER_NAME}
+                else
+                    echo 'No existing container found. Deploying fresh...'
+                fi
+            """
 
-                    echo "✅ Application is running at http://localhost:5000"
+            // ✅ Now run the new container
+            sh """
+                echo 'Starting new container...'
+                docker run -d \
+                    --name ${CONTAINER_NAME} \
+                    -p 5000:5000 \
+                    ${DOCKER_IMAGE}:${DOCKER_TAG}
+            """
+
+            // ✅ Show running containers for verification
+            sh "docker ps"
+            echo "✅ Application is running at http://localhost:5000"
                 }
             }
         }
