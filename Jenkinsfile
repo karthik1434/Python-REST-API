@@ -9,6 +9,8 @@ pipeline {
     environment {
         DOCKER_IMAGE = "duggana1994/my-python-api-build-by-kenkins"
         DOCKER_TAG = "latest"
+        CONTAINER_NAME = "my-python-api"
+        APP_PORT = "5000"   // Flask default port
     }
 
     options {
@@ -58,7 +60,35 @@ pipeline {
                 sh 'docker push ${DOCKER_IMAGE}:${DOCKER_TAG}'
             }
         }
+
+        stage('Deploy Locally') {
+            steps {
+                script {
+                    echo "🚀 Deploying container locally..."
+                    
+                    // Stop & remove old container if running
+                    sh """
+                        if [ \$(docker ps -q -f name=${CONTAINER_NAME}) ]; then
+                            echo 'Stopping old container...'
+                            docker stop ${CONTAINER_NAME}
+                            docker rm ${CONTAINER_NAME}
+                        fi
+                    """
+
+                    // Run the new container
+                    sh """
+                        docker run -d \
+                          --name ${CONTAINER_NAME} \
+                          -p 5000:5000 \
+                          ${DOCKER_IMAGE}:${DOCKER_TAG}
+                    """
+
+                    echo "✅ Application is running at http://localhost:5000"
+                }
+            }
+        }
     }
+        
 
     post {
         success {
