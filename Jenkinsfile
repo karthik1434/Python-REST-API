@@ -3,11 +3,11 @@ pipeline {
 
     triggers {
         // Poll SCM every 5 min for new commits
-        pollSCM('H/1 * * * *')
+        pollSCM('* * * * *')
     }
 
     environment {
-        DOCKER_IMAGE = "duggana1994/my-python-api"
+        DOCKER_IMAGE = "duggana1994/my-python-api-build-by-kenkins"
         DOCKER_TAG = "latest"
     }
 
