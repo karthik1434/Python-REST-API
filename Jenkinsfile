@@ -34,19 +34,18 @@ pipeline {
         }
       }
     }
-
-    stage('Build Docker Image') {
-      steps {
-        sh 'docker build -t ${IMAGE} .'
-      }
-    }
     stage('Debug User') {
       steps {
         sh 'whoami'
       }
    }
 
-
+    stage('Build Docker Image') {
+      steps {
+        sh 'docker build -t ${IMAGE} .'
+      }
+    }
+    
     stage('Login to Docker Hub') {
       steps {
         withCredentials([usernamePassword(
