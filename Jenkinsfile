@@ -40,6 +40,12 @@ pipeline {
         sh 'docker build -t ${IMAGE} .'
       }
     }
+    stage('Debug User') {
+      steps {
+        sh 'whoami'
+      }
+   }
+
 
     stage('Login to Docker Hub') {
       steps {
